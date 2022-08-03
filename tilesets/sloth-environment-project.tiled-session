@@ -1,0 +1,45 @@
+{
+    "Map/SizeTest": {
+        "height": 4300,
+        "width": 2
+    },
+    "activeFile": "tsx/base set.tsx",
+    "expandedProjectPaths": [
+    ],
+    "fileStates": {
+        "C:/Dev/undefined_py_game/tiles/open game art tileset.tsx": {
+            "scaleInDock": 1
+        },
+        "tsx files/base set.tsx": {
+            "scaleInDock": 1,
+            "scaleInEditor": 1
+        },
+        "tsx/base set.tsx": {
+            "scaleInDock": 1,
+            "scaleInEditor": 3
+        },
+        "tsx/level 0.tmx": {
+            "scale": 0.75,
+            "selectedLayer": 1,
+            "viewCenter": {
+                "x": 867.3333333333334,
+                "y": 555.3333333333333
+            }
+        }
+    },
+    "last.imagePath": "C:/Dev/Sin_of_Sloth/assests",
+    "map.fixedSize": true,
+    "map.lastUsedFormat": "tmx",
+    "map.width": 60,
+    "openFiles": [
+        "tsx/level 0.tmx",
+        "tsx/base set.tsx"
+    ],
+    "project": "sloth-environment-project.tiled-project",
+    "recentFiles": [
+        "tsx/level 0.tmx",
+        "tsx/base set.tsx",
+        "tsx files/base set.tsx"
+    ],
+    "tileset.lastUsedFormat": "tsx"
+}
