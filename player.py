@@ -1,4 +1,5 @@
 import pygame
+from debug import Debug
 from settings import *
 from drawable_object import Drawable_Object
 
@@ -8,9 +9,13 @@ class Player(Drawable_Object):
         super().__init__(pos,groups,self.img_path)
 
         self.direction = pygame.math.Vector2(0,0)
-        self.jumpforce = 1
 
-    def get_input(self):
+        # player movement variable factors
+        self.gravity_factor = 0.8
+        self.jump_speed = -16
+        self.speed = 8
+
+    def Get_Input(self):
         keys = pygame.key.get_pressed()
         
         if keys[pygame.K_RIGHT]:
@@ -21,25 +26,29 @@ class Player(Drawable_Object):
             self.direction.x = 0
         
         if keys[pygame.K_SPACE]:
-            self.direction.y += self.jump_force
-        else:
-            self.jumpforce = 0
+            self.Jump()
 
     def Collide(self):
+        # get directons and move back against it
         pass
 
-    def Create_Gravity(self):
-        pass
+    def Apply_Gravity(self):
+        self.direction.y += self.gravity_factor
+        self.rect.y += self.direction.y
 
     def Jump(self):
-        pass
-
+        self.direction.y = self.jump_speed 
+ 
     def Move_Horizontal(self):
-        self.rect.x += self.direction.x
+        self.rect.x += self.direction.x  * self.speed
 
     def update(self):
-        self.get_input()
+        # Debug(self.direction)
+        self.Get_Input()
         self.Move_Horizontal()
+        self.Apply_Gravity()
+        
+
 
 
     
