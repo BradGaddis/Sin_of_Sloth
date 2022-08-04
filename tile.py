@@ -1,8 +1,9 @@
 import pygame
 from settings import *
+from drawable_object import *
 
-class Tile(pygame.sprite.Sprite):
+class Tile(Drawable_Object):
     def __init__(self,pos,groups):
-        super().__init__(groups)
-        self.image = pygame.image.load("./assets/placeholder tile.png").convert_alpha()
-        self.rect = self.image.get_rect(topleft = pos)
+        self.img_path = "./assets/placeholder tile.png"
+        super().__init__(pos,groups, self.img_path)
+        

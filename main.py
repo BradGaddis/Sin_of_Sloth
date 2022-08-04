@@ -1,5 +1,3 @@
-from ast import While
-from turtle import Screen, screensize
 import pygame,sys
 from level import Level
 from settings import *
@@ -12,11 +10,14 @@ class Game:
         self.clock = pygame.time.Clock()
         pygame.display.set_caption("Sin of Sloth")
         self.demo_level = Level()
-
+        self.time_since_start = 0
 
     def run(self):
         while True:
-            # self.clock.tick(FPS)
+            self.clock.tick(FPS)
+            # self.time_since_start += 1 / 60
+            # if self.time_since_start >= 10:
+            #     Destroy(self.demo_level)
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
                     pygame.quit()
