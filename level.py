@@ -16,7 +16,10 @@ class Level:
 
         self.setup_level()
 
+    def Side_Scroll():
+        pass
 
+    
 
     def setup_level(self):
         for row_index, row in enumerate(TEST_MAP):
@@ -56,11 +59,18 @@ class Level:
                 if player.direction.x > 0:
                     player.rect.right = sprite.rect.left
 
-    def run(self):
+    def Draw(self):
         self.visible_sprites.draw(self.surface)
         self.visible_sprites.update()
         self.player.draw(self.surface)
         self.player.update()
+
+    def Check_Collisions(self):
         self.Vertical_Collision()
-        self.Horizontal_Collision()
         self.player.update()
+
+    
+    def run(self):
+        self.Draw()
+        self.Side_Scroll()
+        self.Check_Collisions()
