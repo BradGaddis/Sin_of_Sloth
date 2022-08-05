@@ -45,8 +45,6 @@ class Player(Drawable_Object):
     def update(self):
         # Debug(self.direction)
         self.Get_Input()
-        self.Move_Horizontal()
-        self.Apply_Gravity()
         
 
 
