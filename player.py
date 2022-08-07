@@ -1,19 +1,19 @@
 import pygame
 from debug import Debug
 from settings import *
-from drawable_object import Drawable_Object
+
+player_speed = 8
 
 class Player(Drawable_Object):
-    def __init__(self,pos,groups):
+    def __init__(self,pos,groups, speed = player_speed):
         self.img_path = "./assets/player.png"
         super().__init__(pos,groups,self.img_path)
-
         self.direction = pygame.math.Vector2(0,0)
 
         # player movement variable factors
         self.gravity_factor = 0.8
         self.jump_speed = -16
-        self.speed = 8
+        self.speed = player_speed
 
     def Get_Input(self):
         keys = pygame.key.get_pressed()
@@ -43,7 +43,7 @@ class Player(Drawable_Object):
         self.rect.x += self.direction.x  * self.speed
 
     def update(self):
-        # Debug(self.direction)
+        Debug(self.direction)
         self.Get_Input()
         
 
