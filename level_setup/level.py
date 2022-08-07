@@ -1,9 +1,9 @@
 import pygame
-from debug import Debug
-from player import Player, player_speed
-from settings import *
-from support import Import_CSV, Split_TileSet
-from tile import Cut_Tile_Placer, Tile
+from debug.debug import Debug
+from player.player import Player, player_speed
+from settings.settings import *
+from support.support import Import_CSV, Split_TileSet
+from support.tile import Cut_Tile_Placer, Tile
 
 class Level:
     def __init__(self, csv_path = "tilesets\export_map\prototype map.csv", level_path = "assets\placeholder tileset.png"):
@@ -14,11 +14,19 @@ class Level:
         self.player = pygame.sprite.GroupSingle()
 
         # tiling stuff
+        self.layers = None
         self.surface = pygame.display.get_surface()
-        self.level_path =  "assets\placeholder tileset.png"
-        self.csv_path = "tilesets\export_map\prototype map.csv"
-        self.level_shift = 0
+        self.layout = Import_CSV(csv_path)
+        self.tiles = Split_TileSet(level_path)
         self.setup_level()
+
+        # optics
+        self.initial_pos = self.Get_init_pos()
+        self.level_shift = 0
+        self.align = 0
+        self.map_height = len(self.layout)
+        self.map_offset = SCREEN_HEIGHT - self.map_height * TILE_SIZE
+        
     
     def Side_Scroll(self):
         player = self.player.sprite
@@ -41,20 +49,27 @@ class Level:
             self.level_shift = 0
             player.speed = player_speed
 
+    def Get_init_pos(self):
+        pos = []
+        for sprite in self.world_sprites:
+            pos.append(sprite.rect.y)
+        return pos
 
+    def Vertical_Align(self):
+        for index, sprite in enumerate(self.world_sprites):
+            if sprite.rect.y == self.initial_pos[index]:
+                sprite.rect.centery += self.map_offset 
 
     def setup_level(self):
-        tiles = Split_TileSet("assets\placeholder tileset.png")
-        layout = Import_CSV(self.csv_path)
-        for row_index, row in enumerate(layout):
+        for row_index, row in enumerate(self.layout):
             for col_index, col in enumerate(row):
-                value = int(layout[row_index][col_index])
+                value = int(self.layout[row_index][col_index])
                 if value > -1:
                     x = col_index * TILE_SIZE 
                     y = row_index * TILE_SIZE 
                         # Place_Holder_Tiles((x,y), [self.world_sprites, self.collidable_sprites])
                     # print(value)
-                    Cut_Tile_Placer((x,y),[self.world_sprites, self.collidable_sprites], value, tiles)
+                    Cut_Tile_Placer((x,y),[self.world_sprites, self.collidable_sprites], value, self.tiles)
                 # if col == 'P':
         Player((1*TILE_SIZE,1 * TILE_SIZE), self.player)
    
@@ -85,8 +100,8 @@ class Level:
 
     def Draw(self):
         self.world_sprites.draw(self.surface)
-        self.world_sprites.update(self.level_shift)
-        self.collidable_sprites.update(self.level_shift)
+        self.world_sprites.update(self.level_shift,self.align)
+        self.collidable_sprites.update(self.level_shift,self.align)
         self.player.draw(self.surface)
         self.player.update()
  
@@ -99,3 +114,4 @@ class Level:
         self.Draw()
         self.Check_Collisions()
         self.Side_Scroll()
+        self.Vertical_Align()

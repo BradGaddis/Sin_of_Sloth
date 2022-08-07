@@ -1,6 +1,6 @@
 import csv
 from sys import flags
-from settings import TILE_SIZE
+from settings.settings import TILE_SIZE
 import pygame
 
 

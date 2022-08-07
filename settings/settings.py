@@ -1,6 +1,6 @@
 # Screen setup
 
-from drawable_object import Drawable_Object
+from support.drawable_object import Drawable_Object
 
 
 SCREEN_WIDTH = 1200

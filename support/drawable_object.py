@@ -1,5 +1,5 @@
 import pygame
-from settings import *
+from settings.settings import *
 
 class Drawable_Object(pygame.sprite.Sprite):
     def __init__(self,pos,groups, img_path):

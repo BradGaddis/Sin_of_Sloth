@@ -1,6 +1,6 @@
 import pygame
-from debug import Debug
-from settings import *
+from debug.debug import Debug
+from settings.settings import *
 
 player_speed = 8
 
