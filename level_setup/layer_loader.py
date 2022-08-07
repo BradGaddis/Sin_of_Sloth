@@ -18,27 +18,34 @@ def Get_Layer_Paths(dir):
     output = []
     for layer in layer_list:
         output.append(f"{dir}\{layer}")
-    print(output)
-    return output
+    # print(output)
+    return [output, layer_list]
 
 
 
-def setup_level(path, tiles, groups = None):
-    layers = Get_Layer_Paths(path)
-    for layer in layers:
-        add_tile_to_group(layer, tiles, groups) 
+def tile_grouper(player, path, tiles, groups = None):
+    layers = Get_Layer_Paths(path)[0]
+    names = Get_Layer_Paths(path)[1]
+    for id,layer in enumerate(layers):
+        add_tile_to_group(layer, tiles, groups,player, id, names) 
 
    
-def add_tile_to_group(layer_csv, scliced_tiles,groups):
-    layout = Import_CSV(layer_csv)
+def add_tile_to_group(layer_csv, scliced_tiles,groups,player,id, names):
+    layout = Import_CSV(layer_csv) # stores a list of values to draw from
+
     for row_index, row in enumerate(layout):
         for col_index, col in enumerate(row):
             value = int( layout[row_index][col_index])
             if value > -1:
                 x = col_index * TILE_SIZE 
                 y = row_index * TILE_SIZE 
-                Cut_Tile_Placer((x,y),groups, value, scliced_tiles)
-    # Player((1*TILE_SIZE,1 * TILE_SIZE), player)
-
+                name = names[id]
+                if name == "prototype map_base.csv":
+                    Cut_Tile_Placer((x,y),[groups[0], groups[1]], value, scliced_tiles)
+                # if names[id] == "player":
+                if name == "prototype map_decoration (non-collidable).csv":
+                    Cut_Tile_Placer((x,y),[groups[0]], value, scliced_tiles)
+        Player((1*TILE_SIZE,1 * TILE_SIZE), player)
+            # Player((x * y), player)
 
 Get_Layer_Paths(test_dir)

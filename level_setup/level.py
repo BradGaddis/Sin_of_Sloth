@@ -1,10 +1,11 @@
 import pygame
-from debug.debug import Debug
 from player.player import Player, player_speed
 from settings.settings import *
 from support.support import Import_CSV, Split_TileSet
 from support.tile import Cut_Tile_Placer, Tile
-from .layer_loader import setup_level as draw_level
+from .layer_loader import tile_grouper
+from distutils.log import debug
+
 
 class Level:
     def __init__(self, csv_path = "tilesets\\export_map\\prototype\\", level_path = "assets\placeholder tileset.png"):
@@ -13,6 +14,9 @@ class Level:
         self.world_sprites = pygame.sprite.Group()
         self.collidable_sprites = pygame.sprite.Group()
         self.player = pygame.sprite.GroupSingle()
+    
+        # group the sprite groups
+        self.groups = [self.world_sprites,self.collidable_sprites,self.player]
 
         # tiling stuff
         self.layers = None
@@ -73,19 +77,21 @@ class Level:
         #             # print(value)
         #             Cut_Tile_Placer((x,y),[self.world_sprites, self.collidable_sprites], value, self.tiles)
         #         # if col == 'P':
-        Player((1*TILE_SIZE,1 * TILE_SIZE), self.player)
-        groups = [self.world_sprites, self.collidable_sprites]
-        draw_level(self.path,self.tiles, groups)
+        # Player((1*TILE_SIZE,1 * TILE_SIZE), self.player)
+        # groups = [self.world_sprites, self.collidable_sprites, self.player]
+        tile_grouper(self.player, self.path,self.tiles, self.groups)
    
 
     def Vertical_Collision(self):
         player = self.player.sprite
         player.Apply_Gravity()
-        for sprite in self.world_sprites:
+        grounded = False
+        for sprite in self.collidable_sprites:
             has_collided = sprite.rect.colliderect(player)
             if has_collided:
                 if player.direction.y > 0:
                     player.rect.bottom = sprite.rect.top
+                    player.is_grounded = True
                     player.direction.y = 0
                 if player.direction.y < 0:
                     player.rect.top = sprite.rect.bottom
@@ -94,7 +100,7 @@ class Level:
     def Horizontal_Collision(self):
         player = self.player.sprite
         player.Move_Horizontal()
-        for sprite in self.world_sprites:
+        for sprite in self.collidable_sprites:
             has_collided = sprite.rect.colliderect(player)
             if has_collided:
                 if player.direction.x < 0:
@@ -103,21 +109,21 @@ class Level:
                     player.rect.right = sprite.rect.left
 
     def Draw(self):
-        self.world_sprites.draw(self.surface)
-        self.world_sprites.update(self.level_shift,self.align)
-        self.collidable_sprites.update(self.level_shift,self.align)
         self.player.update()
         self.player.draw(self.surface)
+        self.world_sprites.update(self.level_shift)
+        self.world_sprites.draw(self.surface)
  
     def Check_Collisions(self):
         self.Horizontal_Collision()
         self.Vertical_Collision()
     
     def Check_Grounded(self):
-        pass
+        return self.player.sprite.is_grounded
     
     def run(self):
+        self.Side_Scroll()
         self.Draw()
         self.Check_Collisions()
-        self.Side_Scroll()
+        debug(self.level_shift)
         # self.Vertical_Align()

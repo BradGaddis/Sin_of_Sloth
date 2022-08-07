@@ -14,6 +14,7 @@ class Player(Drawable_Object):
         self.gravity_factor = 0.8
         self.jump_speed = -16
         self.speed = player_speed
+        self.is_grounded = False
 
     def Get_Input(self):
         keys = pygame.key.get_pressed()
@@ -25,12 +26,10 @@ class Player(Drawable_Object):
         else:
             self.direction.x = 0
         
-        if keys[pygame.K_SPACE]:
+        if keys[pygame.K_SPACE] and self.is_grounded:
             self.Jump()
+            self.is_grounded = False
 
-    def Collide(self):
-        # get directons and move back against it
-        pass
 
     def Apply_Gravity(self):
         self.direction.y += self.gravity_factor
@@ -43,7 +42,6 @@ class Player(Drawable_Object):
         self.rect.x += self.direction.x  * self.speed
 
     def update(self):
-        Debug(self.direction)
         self.Get_Input()
         
 
