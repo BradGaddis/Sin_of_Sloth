@@ -4,9 +4,10 @@ from player.player import Player, player_speed
 from settings.settings import *
 from support.support import Import_CSV, Split_TileSet
 from support.tile import Cut_Tile_Placer, Tile
+from .layer_loader import setup_level as draw_level
 
 class Level:
-    def __init__(self, csv_path = "tilesets\export_map\prototype map.csv", level_path = "assets\placeholder tileset.png"):
+    def __init__(self, csv_path = "tilesets\\export_map\\prototype\\", level_path = "assets\placeholder tileset.png"):
         
         # set sprite groups
         self.world_sprites = pygame.sprite.Group()
@@ -16,7 +17,8 @@ class Level:
         # tiling stuff
         self.layers = None
         self.surface = pygame.display.get_surface()
-        self.layout = Import_CSV(csv_path)
+        self.path = csv_path
+        # self.layout = Import_CSV(csv_path)
         self.tiles = Split_TileSet(level_path)
         self.setup_level()
 
@@ -24,8 +26,8 @@ class Level:
         self.initial_pos = self.Get_init_pos()
         self.level_shift = 0
         self.align = 0
-        self.map_height = len(self.layout)
-        self.map_offset = SCREEN_HEIGHT - self.map_height * TILE_SIZE
+        # self.map_height = len(self.layout)
+        # self.map_offset = SCREEN_HEIGHT - self.map_height * TILE_SIZE
         
     
     def Side_Scroll(self):
@@ -61,17 +63,19 @@ class Level:
                 sprite.rect.centery += self.map_offset 
 
     def setup_level(self):
-        for row_index, row in enumerate(self.layout):
-            for col_index, col in enumerate(row):
-                value = int(self.layout[row_index][col_index])
-                if value > -1:
-                    x = col_index * TILE_SIZE 
-                    y = row_index * TILE_SIZE 
-                        # Place_Holder_Tiles((x,y), [self.world_sprites, self.collidable_sprites])
-                    # print(value)
-                    Cut_Tile_Placer((x,y),[self.world_sprites, self.collidable_sprites], value, self.tiles)
-                # if col == 'P':
+        # for row_index, row in enumerate(self.layout):
+        #     for col_index, col in enumerate(row):
+        #         value = int(self.layout[row_index][col_index])
+        #         if value > -1:
+        #             x = col_index * TILE_SIZE 
+        #             y = row_index * TILE_SIZE 
+        #                 # Place_Holder_Tiles((x,y), [self.world_sprites, self.collidable_sprites])
+        #             # print(value)
+        #             Cut_Tile_Placer((x,y),[self.world_sprites, self.collidable_sprites], value, self.tiles)
+        #         # if col == 'P':
         Player((1*TILE_SIZE,1 * TILE_SIZE), self.player)
+        groups = [self.world_sprites, self.collidable_sprites]
+        draw_level(self.path,self.tiles, groups)
    
 
     def Vertical_Collision(self):
@@ -108,10 +112,12 @@ class Level:
     def Check_Collisions(self):
         self.Horizontal_Collision()
         self.Vertical_Collision()
-
+    
+    def Check_Grounded(self):
+        pass
     
     def run(self):
         self.Draw()
         self.Check_Collisions()
         self.Side_Scroll()
-        self.Vertical_Align()
+        # self.Vertical_Align()

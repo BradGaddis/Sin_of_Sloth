@@ -8,5 +8,5 @@ class Drawable_Object(pygame.sprite.Sprite):
         if img_path:
             self.image = pygame.image.load(img_path).convert_alpha()
             self.rect = self.image.get_rect(topleft = pos)
-        
+
         

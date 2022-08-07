@@ -15,3 +15,4 @@ class Cut_Tile_Placer(Tile):
         super().__init__(pos, groups)
         self.image = tiles[value]
         self.rect = self.image.get_rect(topleft = pos)
+
