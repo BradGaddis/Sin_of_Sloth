@@ -33,7 +33,7 @@ class Level:
         player_x = player.rect.centerx
         x_direct = player.direction.x
 
-        LEFT_BOUND = SCREEN_WIDTH / 8
+        LEFT_BOUND = SCREEN_WIDTH / 4
         RIGHT_BOUND = SCREEN_WIDTH - LEFT_BOUND
 
         # if player_x <= LEFT_BOUND or player_x >= RIGHT_BOUND:
@@ -102,8 +102,8 @@ class Level:
         self.world_sprites.draw(self.surface)
         self.world_sprites.update(self.level_shift,self.align)
         self.collidable_sprites.update(self.level_shift,self.align)
-        self.player.draw(self.surface)
         self.player.update()
+        self.player.draw(self.surface)
  
     def Check_Collisions(self):
         self.Horizontal_Collision()
