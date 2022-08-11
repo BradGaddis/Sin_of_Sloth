@@ -12,6 +12,7 @@ class Player(Drawable_Object):
 
         # player movement variable factors
         self.gravity_factor = 0.8
+        self.terminal_velocity = 15
         self.jump_speed = -16
         self.speed = player_speed
         self.is_grounded = False
@@ -33,6 +34,8 @@ class Player(Drawable_Object):
 
     def Apply_Gravity(self):
         self.direction.y += self.gravity_factor
+        if self.direction.y >= self.terminal_velocity:
+            self.direction.y = self.terminal_velocity
         self.rect.y += self.direction.y
 
     def Jump(self):
@@ -44,7 +47,6 @@ class Player(Drawable_Object):
     def update(self):
         self.Get_Input()
         
-
 
 
     

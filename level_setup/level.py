@@ -14,10 +14,12 @@ class Level:
         # set sprite groups
         self.world_sprites = pygame.sprite.Group()
         self.collidable_sprites = pygame.sprite.Group()
+        self.invisible_collider_sprites = pygame.sprite.Group()
+        self.invisible_trigger_sprites = pygame.sprite.Group()
         self.player = pygame.sprite.GroupSingle()
     
         # group the sprite groups
-        self.groups = [self.world_sprites,self.collidable_sprites,self.player]
+        self.groups = [self.world_sprites,self.collidable_sprites,self.player,self.invisible_collider_sprites,self.invisible_trigger_sprites]
 
         # tiling stuff
         self.layers = None
@@ -39,9 +41,8 @@ class Level:
 
         self.map_rect = Screen_Fill((0,self.map_height - LOWER_BOUND),self.world_sprites,(self.map_length , LOWER_BOUND))
 
-        self.playerObj = None
-        
         # camera settings
+        self.scroll_lock = False
         self.look_ahead_vertical = 0
         self.look_ahead_horizontal = 0
 
@@ -51,17 +52,11 @@ class Level:
         player = self.player.sprite
         player_x = player.rect.centerx
         x_direct = player.direction.x
-
-        LEFT_BOUND = SCREEN_WIDTH / 4
-        RIGHT_BOUND = SCREEN_WIDTH - LEFT_BOUND
-
-        # if player_x <= LEFT_BOUND or player_x >= RIGHT_BOUND:
-        #     self.level_shift = -player.direction.x * player_speed
-        #     player.speed = 0
-        if player_x <= LEFT_BOUND and x_direct < 0:
+    
+        if player_x <= LEFT_BOUND and x_direct < 0 and self.map_rect.rect.topleft[0] < 0:
             self.level_shift = -x_direct * player_speed
             player.speed = 0
-        elif player_x >= RIGHT_BOUND and x_direct > 0:
+        elif player_x >= RIGHT_BOUND and x_direct > 0 and self.map_rect.rect.topright[0] > SCREEN_WIDTH:
             self.level_shift = -x_direct * player_speed
             player.speed = 0
         else:
@@ -74,35 +69,29 @@ class Level:
             pos.append(sprite.rect.y)
         return pos
 
-    def Vertical_Align(self):
+    def Vertical_Scroll(self):
         player = self.player.sprite
         player_y = player.rect.centery
         y_direct = player.direction.y
 
-        
         if player_y <= UPPER_BOUND and y_direct < 0:
-            self.align = -y_direct * player.gravity_factor
-        elif player_y >= LOWER_BOUND and y_direct > player.gravity_factor:
-            self.align = -y_direct * player.gravity_factor
+            self.align = -y_direct * player.terminal_velocity
+            self.scroll_lock = False
+        elif self.map_rect.rect.colliderect(player) and self.map_rect.rect.bottomleft[1] > SCREEN_HEIGHT:
+            self.align = -player.terminal_velocity
+            self.scroll_lock = True
+        elif player_y >= LOWER_BOUND and y_direct > player.gravity_factor and self.map_rect.rect.bottomleft[1] < SCREEN_HEIGHT and not self.scroll_lock:
+            self.align = -player.terminal_velocity
         else:
             self.align = 0
-        if self.map_rect.rect.colliderect(player):
-            self.align = 0
-
-        # black_box = pygame.draw.rect(self.screen_view, (0,0,0,0), (0, (SCREEN_HEIGHT - self.offset ) + self.align * -y_direct, SCREEN_WIDTH, self.offset))
         
-        # pygame.draw.rect(lower_collider_box)
-        # if player.rect.y > self.mapoffset
-        # somehow lock the map pos
 
     def setup_level(self):
         tile_grouper(self.player, self.path,self.tiles, self.groups)
-   
 
     def Vertical_Collision(self):
         player = self.player.sprite
         player.Apply_Gravity()
-        grounded = False
         for sprite in self.collidable_sprites:
             has_collided = sprite.rect.colliderect(player)
             if has_collided:
@@ -126,14 +115,14 @@ class Level:
                     player.rect.right = sprite.rect.left
 
     def Draw(self):
+        self.world_sprites.draw(self.surface)
+        self.world_sprites.update(self.level_shift, self.align)
         self.player.update()
         self.player.draw(self.surface)
-        self.world_sprites.update(self.level_shift, self.align)
-        self.world_sprites.draw(self.surface)
  
     def Check_Collisions(self):
-        self.Horizontal_Collision()
         self.Vertical_Collision()
+        self.Horizontal_Collision()
     
     def Check_Grounded(self):
         return self.player.sprite.is_grounded
@@ -143,4 +132,4 @@ class Level:
         self.Side_Scroll()
         self.Draw()
         self.Check_Collisions()
-        self.Vertical_Align()
+        self.Vertical_Scroll()

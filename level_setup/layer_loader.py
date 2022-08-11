@@ -49,6 +49,5 @@ def add_tile_to_group(layer_csv, scliced_tiles,groups,player,id, names):
                     Cut_Tile_Placer((x,y),[groups[0]], value, scliced_tiles)
  
 
-            # print(tile)
 
             
