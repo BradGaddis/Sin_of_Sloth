@@ -9,16 +9,20 @@
     ],
     "fileStates": {
         "prototype map.tmx": {
-            "scale": 0.5,
+            "scale": 1.5,
             "selectedLayer": 1,
             "viewCenter": {
-                "x": 1013,
-                "y": 363
+                "x": 940.6666666666666,
+                "y": 794.3333333333333
             }
         },
         "tsx/placeholder tilset.tsx": {
             "scaleInDock": 1,
             "scaleInEditor": 3
+        },
+        "tsx/player.tsx": {
+            "scaleInDock": 1,
+            "scaleInEditor": 1
         }
     },
     "last.exportedFilePath": "C:/Dev/Sin_of_Sloth/tilesets/export_map/prototype",
@@ -28,10 +32,12 @@
     "mapScene.enableWorlds": true,
     "openFiles": [
         "prototype map.tmx",
-        "tsx/placeholder tilset.tsx"
+        "tsx/placeholder tilset.tsx",
+        "tsx/player.tsx"
     ],
     "project": "sloth-basic.tiled-project",
     "recentFiles": [
+        "tsx/player.tsx",
         "tsx/placeholder tilset.tsx",
         "prototype map.tmx"
     ],

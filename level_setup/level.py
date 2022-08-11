@@ -1,8 +1,9 @@
+from importlib.util import set_loader
 import pygame
 from player.player import Player, player_speed
 from settings.settings import *
 from support.support import Import_CSV, Split_TileSet
-from support.tile import Cut_Tile_Placer, Tile
+from support.tile import *
 from .layer_loader import tile_grouper
 from distutils.log import debug
 
@@ -22,17 +23,29 @@ class Level:
         self.layers = None
         self.surface = pygame.display.get_surface()
         self.path = csv_path
+        
         # self.layout = Import_CSV(csv_path)
+        self.align = 0
         self.tiles = Split_TileSet(level_path)
         self.setup_level()
 
         # optics
         self.initial_pos = self.Get_init_pos()
         self.level_shift = 0
-        self.align = 0
-        # self.map_height = len(self.layout)
-        # self.map_offset = SCREEN_HEIGHT - self.map_height * TILE_SIZE
+        self.map_height = len(Import_CSV(csv_path + "prototype map_base.csv")) * TILE_SIZE
+        self.map_length = len(Import_CSV(csv_path + "prototype map_base.csv")[0]) * TILE_SIZE
+        self.screen_view = pygame.display.get_surface()
+        self.offset = abs(self.map_height  - SCREEN_HEIGHT)
+
+        self.map_rect = Screen_Fill((0,self.map_height - LOWER_BOUND),self.world_sprites,(self.map_length , LOWER_BOUND))
+
+        self.playerObj = None
         
+        # camera settings
+        self.look_ahead_vertical = 0
+        self.look_ahead_horizontal = 0
+
+
     
     def Side_Scroll(self):
         player = self.player.sprite
@@ -46,10 +59,10 @@ class Level:
         #     self.level_shift = -player.direction.x * player_speed
         #     player.speed = 0
         if player_x <= LEFT_BOUND and x_direct < 0:
-            self.level_shift = -player.direction.x * player_speed
+            self.level_shift = -x_direct * player_speed
             player.speed = 0
         elif player_x >= RIGHT_BOUND and x_direct > 0:
-            self.level_shift = -player.direction.x * player_speed
+            self.level_shift = -x_direct * player_speed
             player.speed = 0
         else:
             self.level_shift = 0
@@ -62,23 +75,27 @@ class Level:
         return pos
 
     def Vertical_Align(self):
-        for index, sprite in enumerate(self.world_sprites):
-            if sprite.rect.y == self.initial_pos[index]:
-                sprite.rect.centery += self.map_offset 
+        player = self.player.sprite
+        player_y = player.rect.centery
+        y_direct = player.direction.y
+
+        
+        if player_y <= UPPER_BOUND and y_direct < 0:
+            self.align = -y_direct * player.gravity_factor
+        elif player_y >= LOWER_BOUND and y_direct > player.gravity_factor:
+            self.align = -y_direct * player.gravity_factor
+        else:
+            self.align = 0
+        if self.map_rect.rect.colliderect(player):
+            self.align = 0
+
+        # black_box = pygame.draw.rect(self.screen_view, (0,0,0,0), (0, (SCREEN_HEIGHT - self.offset ) + self.align * -y_direct, SCREEN_WIDTH, self.offset))
+        
+        # pygame.draw.rect(lower_collider_box)
+        # if player.rect.y > self.mapoffset
+        # somehow lock the map pos
 
     def setup_level(self):
-        # for row_index, row in enumerate(self.layout):
-        #     for col_index, col in enumerate(row):
-        #         value = int(self.layout[row_index][col_index])
-        #         if value > -1:
-        #             x = col_index * TILE_SIZE 
-        #             y = row_index * TILE_SIZE 
-        #                 # Place_Holder_Tiles((x,y), [self.world_sprites, self.collidable_sprites])
-        #             # print(value)
-        #             Cut_Tile_Placer((x,y),[self.world_sprites, self.collidable_sprites], value, self.tiles)
-        #         # if col == 'P':
-        # Player((1*TILE_SIZE,1 * TILE_SIZE), self.player)
-        # groups = [self.world_sprites, self.collidable_sprites, self.player]
         tile_grouper(self.player, self.path,self.tiles, self.groups)
    
 
@@ -111,7 +128,7 @@ class Level:
     def Draw(self):
         self.player.update()
         self.player.draw(self.surface)
-        self.world_sprites.update(self.level_shift)
+        self.world_sprites.update(self.level_shift, self.align)
         self.world_sprites.draw(self.surface)
  
     def Check_Collisions(self):
@@ -122,8 +139,8 @@ class Level:
         return self.player.sprite.is_grounded
     
     def run(self):
+        self.playerObj = self.player.sprite
         self.Side_Scroll()
         self.Draw()
         self.Check_Collisions()
-        debug(self.level_shift)
-        # self.Vertical_Align()
+        self.Vertical_Align()

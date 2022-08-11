@@ -29,10 +29,11 @@ def tile_grouper(player, path, tiles, groups = None):
     for id,layer in enumerate(layers):
         add_tile_to_group(layer, tiles, groups,player, id, names) 
 
-   
+# TODO split all of the path names for quality of life reasons
+
 def add_tile_to_group(layer_csv, scliced_tiles,groups,player,id, names):
     layout = Import_CSV(layer_csv) # stores a list of values to draw from
-
+    tile = None
     for row_index, row in enumerate(layout):
         for col_index, col in enumerate(row):
             value = int( layout[row_index][col_index])
@@ -42,10 +43,12 @@ def add_tile_to_group(layer_csv, scliced_tiles,groups,player,id, names):
                 name = names[id]
                 if name == "prototype map_base.csv":
                     Cut_Tile_Placer((x,y),[groups[0], groups[1]], value, scliced_tiles)
-                # if names[id] == "player":
-                if name == "prototype map_decoration (non-collidable).csv":
+                elif names[id] == "prototype map_player.csv":
+                    Player((x,y), player)
+                elif name == "prototype map_decoration (non-collidable).csv":
                     Cut_Tile_Placer((x,y),[groups[0]], value, scliced_tiles)
-        Player((1*TILE_SIZE,1 * TILE_SIZE), player)
-            # Player((x * y), player)
+ 
 
-Get_Layer_Paths(test_dir)
+            # print(tile)
+
+            
